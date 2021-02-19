@@ -1,0 +1,26 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class LoadMainScene : MonoBehaviour
+{
+    public Sprite layer_front, layer_back;
+    void OnMouseUp()
+    {
+        GetComponent<SpriteRenderer>().sprite = layer_back;
+    }
+    void OnMouseDown()
+    {
+        GetComponent<SpriteRenderer>().sprite = layer_front;
+    }
+    private void OnMouseUpAsButton()
+    {
+        switch (gameObject.name)
+        {
+            case "button":
+                SceneManager.LoadScene("Play");
+              
+                break;
+        }}}
