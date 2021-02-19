@@ -1,0 +1,21 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class enemy : MonoBehaviour
+{
+    protected Animator anim;
+    protected virtual void Start()
+    {
+        anim = GetComponent<Animator>();
+    }
+    public void jumpedOn()
+    {
+anim.SetTrigger("death");
+
+    }
+    public void death()
+    {
+       Destroy(this.gameObject);
+
+    }}
