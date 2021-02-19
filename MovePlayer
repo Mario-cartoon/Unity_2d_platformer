@@ -1,0 +1,129 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+public class MovePlayer : MonoBehaviour
+{
+    Animator anim;
+    Rigidbody2D rb;
+    public GameObject bl;
+    public GameObject b2;
+    public float speed;
+    public float jump; 
+    public int directionInput; 
+    private bool isGround=true; 
+    public Transform groundCheck; 
+    public bool facingRight; 
+    public float checkRadius; 
+    public LayerMask whatGround; 
+    private int extJump; 
+    public int exJvalue; 
+    private enum State { idle, run , jump, fall }
+    private State state = State.idle;
+    public float hurtforse = 50f;
+    public Text score;
+    public int count; 
+
+
+    void Start()
+    {
+        count = 0;
+        extJump = exJvalue;
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();}
+    void Update()
+    {     
+        if ((directionInput < 0) && (facingRight))
+        {
+            flip();
+        }
+        else if ((directionInput > 0) && (!facingRight)) {
+            flip();
+        }
+        States();
+        anim.SetInteger("state", (int)state);
+    }
+
+    private void FixedUpdate()
+    {
+        isGround = Physics2D.OverlapCircle(groundCheck.position, checkRadius,whatGround);
+    }
+   public void Move(int InputAxis) 
+    {
+        directionInput=InputAxis;
+        rb.velocity = new Vector2(speed * directionInput, rb.velocity.y);
+   public void OnMouseUpAsButton() 
+    {
+        if (isGround == true)
+        {
+            extJump = exJvalue;
+        }
+        if (extJump > 0)
+        {          
+            rb.velocity = Vector2.up * jump;
+            extJump--;
+        }
+        else if (extJump == 0 && isGround == true) 
+        {
+            state = State.fall;
+            rb.velocity = Vector2.up * jump;
+        }
+        state = State.jump; 
+    }
+    void flip() 
+    {
+        facingRight = !facingRight;
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
+    }
+     void OnTriggerEnter2D(Collider2D other)
+    {
+        Health health = GetComponent<Health>();
+        Score sc = GetComponent<Score>();
+        
+        if (other.gameObject.tag == "Diamond"){
+            sc.ScoreSchet();
+            Destroy(other.gameObject);   
+        }
+        if (other.gameObject.tag == "Heart")
+        {
+            health.health++;
+            Destroy(other.gameObject);
+        }
+        if (other.tag == "Finish"){ 
+            SceneManager.LoadScene(0)}}
+    private void OnCollisionEnter2D(Collision2D other){
+        Health health = GetComponent<Health>();
+        if (other.gameObject.tag == "Respawn")
+        {enemy enemy = other.gameObject.GetComponent<enemy>();
+if (state==State.fall){
+                enemy.jumpedOn();}
+         else
+            {anim.SetTrigger("hurt");
+                if (other.gameObject.transform.position.x > transform.position.x)
+                { rb.velocity = new Vector2(-hurtforse, rb.velocity.y);
+                    health.health--;
+                    if (health.health == 0)
+                    {SceneManager.LoadScene(0);}}
+                else
+                {rb.velocity = new Vector2(hurtforse, rb.velocity.y);
+                    health.health--;
+                    if (health.health == 0)
+                    {SceneManager.LoadScene(0);}}}}
+    }
+    private void States() 
+    {
+        if (state == State.jump)
+        {
+            if (rb.velocity.y < .1f)
+            {state = State.fall;}
+        }else if (state == State.fall)
+        {if (isGround)
+            {state = State.idle;}}
+        else if (Mathf.Abs(rb.velocity.x) > Mathf.Epsilon)
+        {state = State.run;
+        }
+        else
+        {state = State.idle; }}}
